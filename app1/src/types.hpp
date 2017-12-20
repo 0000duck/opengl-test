@@ -6,7 +6,24 @@
 #include <locale>
 #include <iostream>
 
-namespace fs= std::filesystem;
+std::string readFile(const std::string& filePath) {
+    std::string content;
+    std::ifstream fileStream(filePath, std::ios::in);
+
+    if(!fileStream.is_open()) {
+        std::cerr << "Could not read file " << filePath << ". File does not exist." << std::endl;
+        return "";
+    }
+
+    std::string line = "";
+    while(!fileStream.eof()) {
+        std::getline(fileStream, line);
+        content.append(line + "\n");
+    }
+
+    fileStream.close();
+    return content;
+}
 
 class VBO {
 public:
@@ -28,9 +45,7 @@ public:
 	GLuint id;
     explicit Shader(const std::string& filename) {
 		id = glCreateShader(shaderType);
-        std::ifstream fd(filename);
-        const char* src = std::string(std::istreambuf_iterator<char>(fd),
-                               (std::istreambuf_iterator<char>())).c_str();
+        const char* src = readFile(filename).c_str();
 		glShaderSource(id, 1, &src, nullptr);
 		glCompileShader(id);
 		int success;
