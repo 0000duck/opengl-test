@@ -21,7 +21,7 @@ option(BUILD_UNIT_TESTS OFF)
 if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -std=c++11")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -std=c++17")
     if(NOT WIN32)
         set(GLAD_LIBRARIES dl)
     endif()
@@ -39,10 +39,10 @@ include_directories(app1/src/
 file(GLOB VENDORS_SOURCES app1/lib/glad/src/glad.c)
 file(GLOB PROJECT_HEADERS app1/src/*.hpp)
 file(GLOB PROJECT_SOURCES app1/src/*.cpp)
-file(GLOB PROJECT_SHADERS app1/Shaders/*.comp
-                          app1/Shaders/*.frag
-                          app1/Shaders/*.geom
-                          app1/Shaders/*.vert)
+file(GLOB PROJECT_SHADERS app1/src/shaders/*.comp
+                          app1/src/shaders/*.frag
+                          app1/src/shaders/*.geom
+                          app1/src/shaders/*.vert)
 file(GLOB PROJECT_CONFIGS CMakeLists.txt
                           Readme.md
                          .gitattributes

@@ -10,6 +10,7 @@
 #include <cstdlib>
 
 int main(int argc, char * argv[]) {
+    std::cout<<argv[0];
 
     // Load GLFW and Create a Window
     glfwInit();
@@ -32,6 +33,11 @@ int main(int argc, char * argv[]) {
     fprintf(stderr, "OpenGL %s\n", glGetString(GL_VERSION));
 
     VBO x;
+    Shader<GL_VERTEX_SHADER> vert("src/shaders/a1.vert");
+    Shader<GL_FRAGMENT_SHADER> frag("src/shaders/a1.frag");
+    ShaderProgram prog;
+    prog.linkShaderProgram(vert, frag);
+
     // Rendering Loop
     while (glfwWindowShouldClose(mWindow) == false) {
         if (glfwGetKey(mWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
