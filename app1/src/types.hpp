@@ -25,17 +25,59 @@ std::string readFile(const std::string& filePath) {
     return content;
 }
 
-class VBO {
+template<GLenum bufferType>
+class BufferObject {
 public:
     GLuint id;
-    VBO() {
+    BufferObject() {
         glGenBuffers(1, &id);
     }
-    ~VBO() {
+    ~BufferObject() {
         glDeleteBuffers(1, &id);
     }
-    void loadData (size_t size, GLfloat* data) {
-        glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+    void loadData (size_t size, void* data) {
+        bind();
+        glBufferData(bufferType, size, data, GL_STATIC_DRAW);
+    }
+    void bind() {
+        glBindBuffer(bufferType, id);
+    }
+    void unbind() {
+        glBindBuffer(bufferType, 0);
+    }
+};
+
+class VAO {
+private:
+    BufferObject<GL_ARRAY_BUFFER> vbo;
+    BufferObject<GL_ELEMENT_ARRAY_BUFFER> ebo;
+public:
+    GLuint id;
+    VAO() {
+        glGenVertexArrays(1, &id);
+    }
+    ~VAO() {
+        glDeleteVertexArrays(1, &id);
+    }
+    void loadVertices(size_t size, GLfloat* data) {
+        bind();
+        vbo.loadData(size, data);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+        unbind();
+        vbo.unbind();
+    }
+    void loadIndices (size_t size, GLuint* data) {
+        bind();
+        ebo.loadData(size, data);
+        unbind();
+        ebo.unbind();
+    };
+    void bind() {
+        glBindVertexArray(id);
+    }
+    void unbind() {
+        glBindVertexArray(0);
     }
 };
 
