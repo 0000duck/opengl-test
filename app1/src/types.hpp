@@ -115,6 +115,9 @@ private:
     void doLoad(GLint loc, const glm::vec4& v) {
         glUniform4f(loc, v.x, v.y, v.z, v.w);
     }
+    void doLoad(GLint loc, const glm::mat4& m) {
+        glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(m));
+    }
 public:
     GLuint id;
 

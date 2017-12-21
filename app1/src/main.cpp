@@ -13,7 +13,6 @@
 
 
 int main(int argc, char * argv[]) {
-    std::cout<<argv[0];
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
@@ -64,7 +63,10 @@ int main(int argc, char * argv[]) {
         GLfloat blueValue = (sin(timeValue+1.0) / 2.0f) + 0.5f;
         GLfloat redValue = (sin(timeValue+2.0) / 2.0f) + 0.5f;
         prog.loadUniform("myColor", glm::vec4(redValue, greenValue, blueValue, 1.0f));
-
+        glm::mat4 mvp = glm::mat4(1.0f);
+        //mvp = glm::translate(mvp, glm::vec3(0.5f, -0.5f, 0.0f));
+        mvp = glm::rotate(mvp, (float)glfwGetTime(), glm::vec3(1.0f, 1.0f, 1.0f));
+        prog.loadUniform("mvp", mvp);
         glBindVertexArray(vao.id);
         glUseProgram(prog.id);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
