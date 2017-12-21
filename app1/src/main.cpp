@@ -9,8 +9,17 @@
 #include <cstdio>
 #include <cstdlib>
 
+glm::mat4 model(1.0f);
+glm::mat4 view(1.0f);
+glm::mat4 projection(1.0f);
 
-
+void setupMvp(const ShaderProgram& prog) {
+    glm::mat4 mvp(1.0f);
+    mvp*= projection;
+    mvp*= view;
+    mvp*= model;
+    prog.loadUniform("mvp", mvp);
+}
 
 int main(int argc, char * argv[]) {
     glfwInit();
@@ -50,6 +59,7 @@ int main(int argc, char * argv[]) {
     VAO vao;
     vao.loadVertices(sizeof(vertices), vertices);
     vao.loadIndices(sizeof(indices), indices);
+    projection = glm::perspective(glm::radians(45.0f), (float)mWidth/(float)mHeight, 0.0f, 100.1f);
 
     while (glfwWindowShouldClose(mWindow) == false) {
         if (glfwGetKey(mWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -63,10 +73,10 @@ int main(int argc, char * argv[]) {
         GLfloat blueValue = (sin(timeValue+1.0) / 2.0f) + 0.5f;
         GLfloat redValue = (sin(timeValue+2.0) / 2.0f) + 0.5f;
         prog.loadUniform("myColor", glm::vec4(redValue, greenValue, blueValue, 1.0f));
-        glm::mat4 mvp = glm::mat4(1.0f);
-        //mvp = glm::translate(mvp, glm::vec3(0.5f, -0.5f, 0.0f));
-        mvp = glm::rotate(mvp, (float)glfwGetTime(), glm::vec3(1.0f, 1.0f, 1.0f));
-        prog.loadUniform("mvp", mvp);
+        model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime(), glm::vec3(1.0f, 1.0f, 1.0f));
+        view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
+        view = glm::rotate(view, 0.5f, glm::vec3(1.0f,1.0f,1.0f));
+        setupMvp(prog);
         glBindVertexArray(vao.id);
         glUseProgram(prog.id);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

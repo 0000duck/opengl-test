@@ -112,10 +112,10 @@ private:
 //    void doLoad(GLuint, const Arg&) {
 //    }
 
-    void doLoad(GLint loc, const glm::vec4& v) {
+    void doLoad(GLint loc, const glm::vec4& v) const {
         glUniform4f(loc, v.x, v.y, v.z, v.w);
     }
-    void doLoad(GLint loc, const glm::mat4& m) {
+    void doLoad(GLint loc, const glm::mat4& m) const {
         glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(m));
     }
 public:
@@ -144,7 +144,7 @@ public:
     }
 
     template<typename Arg>
-    void loadUniform(std::string varname, const Arg& input) {
+    void loadUniform(std::string varname, const Arg& input) const {
         GLint location = glGetUniformLocation(id, varname.c_str());
         glUseProgram(id);
         doLoad(location, input);
