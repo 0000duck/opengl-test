@@ -59,6 +59,12 @@ int main(int argc, char * argv[]) {
         glClearColor(0.7f, 0.75f, 0.8f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        float timeValue = glfwGetTime();
+        GLfloat greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+        GLfloat blueValue = (sin(timeValue+1.0) / 2.0f) + 0.5f;
+        GLfloat redValue = (sin(timeValue+2.0) / 2.0f) + 0.5f;
+        prog.loadUniform("myColor", glm::vec4(redValue, greenValue, blueValue, 1.0f));
+
         glBindVertexArray(vao.id);
         glUseProgram(prog.id);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

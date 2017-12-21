@@ -5,6 +5,8 @@
 #include <fstream>
 #include <locale>
 #include <iostream>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 std::string readFile(const std::string& filePath) {
     std::string content;
@@ -105,6 +107,14 @@ public:
 };
 
 class ShaderProgram {
+private:
+//    template<typename Arg>
+//    void doLoad(GLuint, const Arg&) {
+//    }
+
+    void doLoad(GLint loc, const glm::vec4& v) {
+        glUniform4f(loc, v.x, v.y, v.z, v.w);
+    }
 public:
     GLuint id;
 
@@ -129,6 +139,14 @@ public:
         glAttachShader(id, s.id);
         linkShaderProgram(rest...);
     }
+
+    template<typename Arg>
+    void loadUniform(std::string varname, const Arg& input) {
+        GLint location = glGetUniformLocation(id, varname.c_str());
+        glUseProgram(id);
+        doLoad(location, input);
+    }
+
 };
 
 #endif //APP1_TYPES_HPP
