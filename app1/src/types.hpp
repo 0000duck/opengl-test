@@ -45,7 +45,8 @@ public:
 	GLuint id;
     explicit Shader(const std::string& filename) {
 		id = glCreateShader(shaderType);
-        const char* src = readFile(filename).c_str();
+        std::string src1 = readFile(filename);
+        const char* src = src1.c_str();
 		glShaderSource(id, 1, &src, nullptr);
 		glCompileShader(id);
 		int success;
