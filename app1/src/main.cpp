@@ -9,6 +9,45 @@
 #include <cstdio>
 #include <cstdlib>
 
+GLfloat g_vertex_buffer_data[] = {
+        -1.0f,-1.0f,-1.0f, // triangle 1 : begin
+        -1.0f,-1.0f, 1.0f,
+        -1.0f, 1.0f, 1.0f, // triangle 1 : end
+        1.0f, 1.0f,-1.0f, // triangle 2 : begin
+        -1.0f,-1.0f,-1.0f,
+        -1.0f, 1.0f,-1.0f, // triangle 2 : end
+        1.0f,-1.0f, 1.0f,
+        -1.0f,-1.0f,-1.0f,
+        1.0f,-1.0f,-1.0f,
+        1.0f, 1.0f,-1.0f,
+        1.0f,-1.0f,-1.0f,
+        -1.0f,-1.0f,-1.0f,
+        -1.0f,-1.0f,-1.0f,
+        -1.0f, 1.0f, 1.0f,
+        -1.0f, 1.0f,-1.0f,
+        1.0f,-1.0f, 1.0f,
+        -1.0f,-1.0f, 1.0f,
+        -1.0f,-1.0f,-1.0f,
+        -1.0f, 1.0f, 1.0f,
+        -1.0f,-1.0f, 1.0f,
+        1.0f,-1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f,-1.0f,-1.0f,
+        1.0f, 1.0f,-1.0f,
+        1.0f,-1.0f,-1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f,-1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f,-1.0f,
+        -1.0f, 1.0f,-1.0f,
+        1.0f, 1.0f, 1.0f,
+        -1.0f, 1.0f,-1.0f,
+        -1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        -1.0f, 1.0f, 1.0f,
+        1.0f,-1.0f, 1.0f
+};
+
 glm::mat4 model(1.0f);
 glm::mat4 view(1.0f);
 glm::mat4 projection(1.0f);
@@ -39,7 +78,6 @@ int main(int argc, char * argv[]) {
     gladLoadGL();
     fprintf(stderr, "OpenGL %s\n", glGetString(GL_VERSION));
 
-
     float vertices[] = {
             0.5f,  0.5f, 0.0f,  // top right
             0.5f, -0.5f, 0.0f,  // bottom right
@@ -57,30 +95,30 @@ int main(int argc, char * argv[]) {
         prog.linkShaderProgram(vert, frag);
     }
     VAO vao;
-    vao.loadVertices(sizeof(vertices), vertices);
+    vao.loadVertices(sizeof(g_vertex_buffer_data), g_vertex_buffer_data);
     vao.loadIndices(sizeof(indices), indices);
-    projection = glm::perspective(glm::radians(45.0f), (float)mWidth/(float)mHeight, 0.0f, 100.1f);
+    projection = glm::perspective(glm::radians(45.0f), (float)mWidth/(float)mHeight, 0.1f, 100.1f);
+
+    glEnable(GL_DEPTH_TEST);
 
     while (glfwWindowShouldClose(mWindow) == false) {
         if (glfwGetKey(mWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(mWindow, true);
 
         glClearColor(0.7f, 0.75f, 0.8f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        //glEnable(GL_DEPTH_TEST);
 
-        float timeValue = glfwGetTime();
-        GLfloat greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-        GLfloat blueValue = (sin(timeValue+1.0) / 2.0f) + 0.5f;
-        GLfloat redValue = (sin(timeValue+2.0) / 2.0f) + 0.5f;
-        prog.loadUniform("myColor", glm::vec4(redValue, greenValue, blueValue, 1.0f));
+        //prog.loadUniform("myColor", glm::vec4(redValue, greenValue, blueValue, 1.0f));
         model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime(), glm::vec3(1.0f, 1.0f, 1.0f));
-        view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
+        model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
+        view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -6.0f));
         view = glm::rotate(view, 0.5f, glm::vec3(1.0f,1.0f,1.0f));
         setupMvp(prog);
         glBindVertexArray(vao.id);
         glUseProgram(prog.id);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
+        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_TRIANGLES, 0, 12*3);
         glfwSwapBuffers(mWindow);
         glfwPollEvents();
     }   glfwTerminate();
