@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+
 std::string readFile(const std::string& filePath) {
     std::string content;
     std::ifstream fileStream(filePath, std::ios::in);
@@ -27,7 +28,7 @@ std::string readFile(const std::string& filePath) {
     return content;
 }
 
-template<GLenum bufferType>
+template<GLenum bufferType, typename DataType = GLfloat>
 class BufferObject {
 public:
     GLuint id;
@@ -37,9 +38,10 @@ public:
     ~BufferObject() {
         glDeleteBuffers(1, &id);
     }
-    void loadData (size_t size, void* data) {
+
+    void loadData(size_t size, DataType data[]) {
         bind();
-        glBufferData(bufferType, size, data, GL_STATIC_DRAW);
+        glBufferData(bufferType, size * sizeof(DataType), data, GL_STATIC_DRAW);
     }
     void bind() {
         glBindBuffer(bufferType, id);
@@ -49,39 +51,8 @@ public:
     }
 };
 
-class VAO {
-private:
-    BufferObject<GL_ARRAY_BUFFER> vbo;
-    BufferObject<GL_ELEMENT_ARRAY_BUFFER> ebo;
-public:
-    GLuint id;
-    VAO() {
-        glGenVertexArrays(1, &id);
-    }
-    ~VAO() {
-        glDeleteVertexArrays(1, &id);
-    }
-    void loadVertices(size_t size, GLfloat* data) {
-        bind();
-        vbo.loadData(size, data);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
-        unbind();
-        vbo.unbind();
-    }
-    void loadIndices (size_t size, GLuint* data) {
-        bind();
-        ebo.loadData(size, data);
-        unbind();
-        ebo.unbind();
-    };
-    void bind() {
-        glBindVertexArray(id);
-    }
-    void unbind() {
-        glBindVertexArray(0);
-    }
-};
+//template<typename VertexType>
+
 
 template <GLenum shaderType>
 class Shader {
