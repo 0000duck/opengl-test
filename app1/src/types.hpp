@@ -31,6 +31,8 @@ std::string readFile(const std::string& filePath) {
 template<GLenum bufferType, typename DataType = GLfloat>
 class BufferObject {
 public:
+    BufferObject(BufferObject const &) = delete;
+    BufferObject & operator=(BufferObject const &) = delete;
     GLuint id;
     BufferObject() {
         glGenBuffers(1, &id);
@@ -58,6 +60,8 @@ template <GLenum shaderType>
 class Shader {
 public:
 	GLuint id;
+    Shader(Shader const &) = delete;
+    Shader & operator=(Shader const &) = delete;
     explicit Shader(const std::string& filename) {
 		id = glCreateShader(shaderType);
         std::string src1 = readFile(filename);
@@ -92,6 +96,8 @@ private:
 public:
     GLuint id;
 
+    ShaderProgram(ShaderProgram const &) = delete;
+    ShaderProgram & operator=(ShaderProgram const &) = delete;
     ShaderProgram() {
         id = glCreateProgram();
     }

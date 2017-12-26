@@ -21,9 +21,12 @@ private:
     BufferObject<GL_ARRAY_BUFFER> vbo;
     BufferObject<GL_ARRAY_BUFFER> normals;
     BufferObject<GL_ELEMENT_ARRAY_BUFFER, GLuint> ebo;
+
 public:
     GLuint id;
 
+    VAO(VAO const &) = delete;
+    VAO & operator=(VAO const &) = delete;
     VAO() {
         glGenVertexArrays(1, &id);
     }
