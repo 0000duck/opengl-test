@@ -115,7 +115,7 @@ public:
         }
     }
     template <GLenum first, typename... Args>
-    void linkShaderProgram(const Shader<first>& s, Args... rest) {
+    void linkShaderProgram(const Shader<first>& s, const Args&... rest) {
         glAttachShader(id, s.id);
         linkShaderProgram(rest...);
     }
