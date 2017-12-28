@@ -15,6 +15,8 @@ Mesh::Mesh(std::string filename) {
     const aiScene *scene = importer.ReadFile(filename.c_str(), 0);
     if (scene == nullptr)
         throw std::runtime_error(importer.GetErrorString());
+    if (!scene->HasMeshes())
+        throw std::runtime_error("No meshes in file");
     for (unsigned i = 0; i < scene->mNumMeshes; i++) {
         meshElements.emplace_back(scene->mMeshes[i]);
     }
