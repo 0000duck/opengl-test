@@ -9,25 +9,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 
-std::string readFile(const std::string& filePath) {
-    std::string content;
-    std::ifstream fileStream(filePath, std::ios::in);
-
-    if(!fileStream.is_open()) {
-        std::cerr << "Could not read file " << filePath << ". File does not exist." << std::endl;
-        return "";
-    }
-
-    std::string line = "";
-    while(!fileStream.eof()) {
-        std::getline(fileStream, line);
-        content.append(line + "\n");
-    }
-
-    fileStream.close();
-    return content;
-}
-
 template<GLenum bufferType, typename DataType = GLfloat>
 class BufferObject {
 public:
@@ -58,6 +39,25 @@ public:
 
 template <GLenum shaderType>
 class Shader {
+private:
+    std::string readFile(const std::string& filePath) {
+        std::string content;
+        std::ifstream fileStream(filePath, std::ios::in);
+
+        if(!fileStream.is_open()) {
+            std::cerr << "Could not read file " << filePath << ". File does not exist." << std::endl;
+            return "";
+        }
+
+        std::string line = "";
+        while(!fileStream.eof()) {
+            std::getline(fileStream, line);
+            content.append(line + "\n");
+        }
+
+        fileStream.close();
+        return content;
+    }
 public:
 	GLuint id;
     Shader(Shader const &) = delete;

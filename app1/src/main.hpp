@@ -23,6 +23,6 @@ const int mWidth = 1280;
 const int mHeight = 800;
 
 #include "types.hpp"
-#include "vao.hpp"
+#include "mesh.hpp"
 
 #endif

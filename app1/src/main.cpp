@@ -11,12 +11,13 @@ glm::mat4 model(1.0f);
 glm::mat4 view(1.0f);
 glm::mat4 projection(1.0f);
 
-void setupMvp(const ShaderProgram& prog) {
+glm::mat4 setupMvp() {
     glm::mat4 mvp(1.0f);
     mvp*= projection;
     mvp*= view;
     mvp*= model;
-    prog.loadUniform("mvp", mvp);
+    return mvp;
+
 }
 
 int main(int, char **) {
@@ -37,31 +38,11 @@ int main(int, char **) {
     gladLoadGL();
     fprintf(stderr, "OpenGL %s\n", glGetString(GL_VERSION));
 
-    std::vector<Vertex> vertices{
-            Vertex(-1.0f, -1.0f, -1.0f),
-            Vertex(-1.0f, -1.0f, 1.0f),
-            Vertex(-1.0f, 1.0f, 1.0f),
-            Vertex(1.0f, 1.0f, 1.0f)
-    };
-    GLuint indices[] = {  // note that we start from 0!
-            0, 1, 2,
-            0, 2, 3,
-            1, 2, 3,
-            1, 0, 3
-    };
-    ShaderProgram prog;
-    {
-        Shader<GL_VERTEX_SHADER> vert(SHADERS_DIR "a1.vert");
-        Shader<GL_FRAGMENT_SHADER> frag(SHADERS_DIR "a1.frag");
-        prog.linkShaderProgram(vert, frag);
-    }
-    VAO vao;
-    vao.loadVertices(vertices);
-    vao.loadIndices(sizeof(indices) / sizeof(GLuint), indices);
     projection = glm::perspective(glm::radians(45.0f), (float) mWidth / (float) mHeight, 0.01f, 100.1f);
 
     glEnable(GL_DEPTH_TEST);
 
+    Mesh mesh(PROJECT_SOURCE_DIR "/models/Cup.3DS");
     while (glfwWindowShouldClose(mWindow) == 0) {
         if (glfwGetKey(mWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(mWindow, true);
@@ -71,12 +52,12 @@ int main(int, char **) {
 
         model = glm::rotate_slow(glm::mat4(1.0f), (float) glfwGetTime(), glm::vec3(1.0f, 1.0f, 1.0f));
         model = glm::rotate_slow(model, (float) glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
+        model = glm::rotate_slow(model, (float) glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
         view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -6.0f));
         view = glm::rotate_slow(view, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
-        setupMvp(prog);
-        glBindVertexArray(vao.id);
-        glUseProgram(prog.id);
-        glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(GLuint), GL_UNSIGNED_INT, 0);
+        glm::mat4 mvp = setupMvp();
+        mesh.draw(mvp);
         glfwSwapBuffers(mWindow);
         glfwPollEvents();
     }   glfwTerminate();
