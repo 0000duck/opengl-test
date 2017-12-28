@@ -51,8 +51,8 @@ int main(int, char **) {
     };
     ShaderProgram prog;
     {
-        Shader<GL_VERTEX_SHADER> vert("src/shaders/a1.vert");
-        Shader<GL_FRAGMENT_SHADER> frag("src/shaders/a1.frag");
+        Shader<GL_VERTEX_SHADER> vert(SHADERS_DIR "a1.vert");
+        Shader<GL_FRAGMENT_SHADER> frag(SHADERS_DIR "a1.frag");
         prog.linkShaderProgram(vert, frag);
     }
     VAO vao;
