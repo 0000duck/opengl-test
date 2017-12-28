@@ -9,7 +9,7 @@ add_subdirectory(app1/lib/glfw)
 option(ASSIMP_BUILD_ASSIMP_TOOLS OFF)
 option(ASSIMP_BUILD_SAMPLES OFF)
 option(ASSIMP_BUILD_TESTS OFF)
-#add_subdirectory(app1/lib/assimp)
+add_subdirectory(app1/lib/assimp)
 
 option(BUILD_BULLET2_DEMOS OFF)
 option(BUILD_CPU_DEMOS OFF)
@@ -28,7 +28,7 @@ else()
 endif()
 
 include_directories(app1/src/
-                    #app1/lib/assimp/include/
+                    app1/lib/assimp/include/
                     #app1/lib/bullet/src/
                     app1/lib/glad/include/
                     app1/lib/glfw/include/
@@ -39,10 +39,10 @@ include_directories(app1/src/
 file(GLOB VENDORS_SOURCES app1/lib/glad/src/glad.c)
 file(GLOB PROJECT_HEADERS app1/src/*.hpp)
 file(GLOB PROJECT_SOURCES app1/src/*.cpp)
-file(GLOB PROJECT_SHADERS app1/src/shaders/*.comp
-                          app1/src/shaders/*.frag
-                          app1/src/shaders/*.geom
-                          app1/src/shaders/*.vert)
+file(GLOB PROJECT_SHADERS app1/shaders/*.comp
+                          app1/shaders/*.frag
+                          app1/shaders/*.geom
+                          app1/shaders/*.vert)
 file(GLOB PROJECT_CONFIGS CMakeLists.txt
                           Readme.md
                          .gitattributes
@@ -60,7 +60,7 @@ add_executable(${PROJECT_NAME} ${PROJECT_SOURCES} ${PROJECT_HEADERS}
                                ${PROJECT_SHADERS} ${PROJECT_CONFIGS}
                                ${VENDORS_SOURCES})
 target_link_libraries(${PROJECT_NAME}
-        #assimp
+        assimp
         glfw
         ${GLFW_LIBRARIES} ${GLAD_LIBRARIES}
         #BulletDynamics BulletCollision
