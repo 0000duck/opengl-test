@@ -7,6 +7,9 @@
 double lastTime;
 double deltaTime;
 
+unsigned mWidth = DEFAULT_WIDTH;
+unsigned mHeight = DEFAULT_HEIGHT;
+
 double lastX;
 double lastY;
 bool cameraControl = false;
@@ -15,7 +18,6 @@ Camera camera(glm::vec3(0.0f, 0.0f, -20.0f));
 glm::mat4 model(1.0f);
 glm::mat4 view(1.0f);
 glm::mat4 projection(1.0f);
-
 
 
 glm::mat4 setupMvp() {
@@ -27,7 +29,14 @@ glm::mat4 setupMvp() {
 
 }
 
-void mouseCallback(GLFWwindow*, double xpos, double ypos) {
+void framebufferSizeCallback(GLFWwindow *, int width, int height) {
+    glViewport(0, 0, width, height);
+    mWidth = unsigned(width);
+    mHeight = unsigned(height);
+    projection = glm::perspective(glm::radians(45.0f), (float) mWidth / (float) mHeight, 0.1f, 200.0f);
+}
+
+void mouseCallback(GLFWwindow *, double xpos, double ypos) {
     if (!cameraControl)
         return;
     double xoffset = xpos - lastX;
@@ -35,23 +44,6 @@ void mouseCallback(GLFWwindow*, double xpos, double ypos) {
     camera.processMouseMovement(float(xoffset), float(yoffset));
     lastX = xpos;
     lastY = ypos;
-}
-
-void processInput(GLFWwindow *window) {
-    auto dt = float(deltaTime);
-
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.processKeyboard(FORWARD, dt);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.processKeyboard(BACKWARD, dt);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.processKeyboard(LEFT, dt);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.processKeyboard(RIGHT, dt);
-    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-        camera.processKeyboard(DOWN, dt);
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        camera.processKeyboard(UP, dt);
 }
 
 void mouseButtonFunc(GLFWwindow *win, int button, int action, int) {
@@ -72,14 +64,33 @@ void mouseButtonFunc(GLFWwindow *win, int button, int action, int) {
     }
 }
 
+void processInput(GLFWwindow *window) {
+    auto dt = float(deltaTime);
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        camera.processKeyboard(FORWARD, dt);
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        camera.processKeyboard(BACKWARD, dt);
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        camera.processKeyboard(LEFT, dt);
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        camera.processKeyboard(RIGHT, dt);
+    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+        camera.processKeyboard(DOWN, dt);
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        camera.processKeyboard(UP, dt);
+}
+
+
 int main(int, char **) {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
     auto mWindow = glfwCreateWindow(mWidth, mHeight, "OpenGL", nullptr, nullptr);
+    glfwSetWindowAspectRatio(mWindow, mWidth, mHeight);
 
     if (mWindow == nullptr) {
         fprintf(stderr, "Failed to Create OpenGL Context");
@@ -92,6 +103,7 @@ int main(int, char **) {
 
     glfwSetCursorPosCallback(mWindow, mouseCallback);
     glfwSetMouseButtonCallback(mWindow, mouseButtonFunc);
+    glfwSetFramebufferSizeCallback(mWindow, framebufferSizeCallback);
     camera.movementSpeed = 20.0f;
     projection = glm::perspective(glm::radians(45.0f), (float) mWidth / (float) mHeight, 0.1f, 200.0f);
 

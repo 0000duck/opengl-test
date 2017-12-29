@@ -1,9 +1,7 @@
-// Preprocessor Directives
-#ifndef GLITTER
-#define GLITTER
+#ifndef APP1_MAIN_HPP
+#define APP1_MAIN_HPP
 #pragma once
 
-// System Headers
 //#include <assimp/Importer.hpp>
 //#include <assimp/postprocess.h>
 //#include <assimp/scene.h>
@@ -18,9 +16,8 @@
 //     #define STB_IMAGE_IMPLEMENTATION
 //#include <stb_image.h>
 
-// Define Some Constants
-const int mWidth = 1280;
-const int mHeight = 800;
+const unsigned DEFAULT_WIDTH = 1600;
+const unsigned DEFAULT_HEIGHT = 900;
 
 #include "types.hpp"
 #include "mesh.hpp"
