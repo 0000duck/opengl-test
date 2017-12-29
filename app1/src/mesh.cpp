@@ -19,6 +19,7 @@ Mesh::Mesh(std::string filename) {
         throw std::runtime_error("No meshes in file");
     for (unsigned i = 0; i < scene->mNumMeshes; i++) {
         meshElements.emplace_back(scene->mMeshes[i]);
+        meshElements.rbegin()->color = color;
     }
 }
 
@@ -95,11 +96,15 @@ void Mesh::MeshElement::bind() {
     glBindVertexArray(vao);
 }
 
-void Mesh::MeshElement::draw(glm::mat4& mvp, glm::mat4& model, glm::mat3& normalm) {
+void Mesh::MeshElement::draw(glm::mat4 &mvp, glm::mat4 &model, glm::mat3 &normalm, bool enlight) {
     bind();
     shaderProgram->use();
     shaderProgram->loadUniform("mvp", mvp);
-    shaderProgram->loadUniform("model", model);
-    shaderProgram->loadUniform("normalm", normalm);
+    if (enlight) {
+        shaderProgram->loadUniform("model", model);
+        shaderProgram->loadUniform("normalm", normalm);
+    }
+    shaderProgram->loadUniform("enlight", enlight);
+    shaderProgram->loadUniform("color", color);
     glDrawElements(GL_TRIANGLES, numElements, GL_UNSIGNED_INT, nullptr);
 }

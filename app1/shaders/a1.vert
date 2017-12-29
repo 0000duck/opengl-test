@@ -13,6 +13,6 @@ void main()
 {
     gl_Position = mvp * vec4(aPos, 1.0);
     //color = mix(aPos, vec3(1.0), vec3(0.5));
-    outNormal = normalm * inNormal;
+    outNormal = normalize(normalm * inNormal);
     worldPos = model * vec4(aPos, 1.0);
 }

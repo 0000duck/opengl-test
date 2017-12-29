@@ -13,7 +13,7 @@ unsigned mHeight = DEFAULT_HEIGHT;
 double lastX;
 double lastY;
 bool cameraControl = false;
-Camera camera(glm::vec3(0.0f, 0.0f, -20.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, -15.0f));
 
 glm::mat4 model(1.0f);
 glm::mat4 view(1.0f);
@@ -125,8 +125,8 @@ int main(int, char **) {
         glClearColor(0.7f, 0.75f, 0.8f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        model = glm::rotate_slow(glm::mat4(1.0f), (float) glfwGetTime(), glm::vec3(1.0f, 1.0f, 1.0f));
-        model = glm::rotate_slow(model, (float) glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
+        //model = glm::rotate_slow(glm::mat4(1.0f), (float) glfwGetTime(), glm::vec3(1.0f, 1.0f, 1.0f));
+        //model = glm::rotate_slow(model, (float) glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
         view = camera.getViewMatrix();
 
         glm::mat4 mvp = setupMvp();

@@ -19,6 +19,7 @@ private:
         std::unique_ptr<BufferObject<GL_ARRAY_BUFFER> > normals;
         GLuint vao;
         size_t numElements;
+        glm::vec3 color;
 
         MeshElement(MeshElement const &) = delete;
 
@@ -43,7 +44,7 @@ private:
 
         void bind();
 
-        void draw(glm::mat4& mvp, glm::mat4& model, glm::mat3& normalm);
+        void draw(glm::mat4& mvp, glm::mat4& model, glm::mat3& normalm, bool enlight = true);
     };
 
     std::vector<MeshElement> meshElements;
@@ -61,8 +62,11 @@ public:
     ~Mesh();
 
     void draw(glm::mat4& mvp, glm::mat4& model, glm::mat3& normalm) {
-        for (auto &m: meshElements) m.draw(mvp, model, normalm);
+        for (auto &m: meshElements) m.draw(mvp, model, normalm, enlight);
     };
+
+    bool enlight = true;
+    glm::vec3 color = glm::vec3(0.5f);
 };
 
 

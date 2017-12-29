@@ -109,6 +109,10 @@ private:
         glUniform1i(loc, b ? 1 : 0);
     }
 
+    void doLoad(GLint loc, const glm::vec3 &v) const {
+        glUniform3f(loc, v.x, v.y, v.z);
+    }
+
 public:
     GLuint id;
 
