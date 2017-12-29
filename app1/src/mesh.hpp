@@ -43,7 +43,7 @@ private:
 
         void bind();
 
-        void draw(glm::mat4& mvp);
+        void draw(glm::mat4& mvp, glm::mat4& model, glm::mat3& normalm);
     };
 
     std::vector<MeshElement> meshElements;
@@ -60,7 +60,9 @@ public:
 
     ~Mesh();
 
-    void draw(glm::mat4& mvp) { for (auto &m: meshElements) m.draw(mvp); };
+    void draw(glm::mat4& mvp, glm::mat4& model, glm::mat3& normalm) {
+        for (auto &m: meshElements) m.draw(mvp, model, normalm);
+    };
 };
 
 

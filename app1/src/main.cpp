@@ -1,44 +1,75 @@
-// Local Headers
 #include "main.hpp"
+#include "camera.hpp"
 
-// System Headers
 #include <GLFW/glfw3.h>
 
-// Standard Headers
 
 double lastTime;
 double deltaTime;
+
+double lastX;
+double lastY;
+bool cameraControl = false;
+Camera camera(glm::vec3(0.0f, 0.0f, -20.0f));
 
 glm::mat4 model(1.0f);
 glm::mat4 view(1.0f);
 glm::mat4 projection(1.0f);
 
-glm::vec3 cameraPos(0.0f, 0.0f, -20.0f);
-glm::vec3 cameraDir(0.0f, 0.0f, 1.0f);
 
-const glm::vec3 upVector(0.0f, 1.0f, 0.0f);
 
 glm::mat4 setupMvp() {
     glm::mat4 mvp(1.0f);
-    mvp*= projection;
-    mvp*= view;
-    mvp*= model;
+    mvp *= projection;
+    mvp *= view;
+    mvp *= model;
     return mvp;
 
 }
 
+void mouseCallback(GLFWwindow*, double xpos, double ypos) {
+    if (!cameraControl)
+        return;
+    double xoffset = xpos - lastX;
+    double yoffset = lastY - ypos;
+    camera.processMouseMovement(float(xoffset), float(yoffset));
+    lastX = xpos;
+    lastY = ypos;
+}
 
-void processInput(GLFWwindow *window)
-{
-    float cameraSpeed = float(deltaTime) * 25.f;
+void processInput(GLFWwindow *window) {
+    auto dt = float(deltaTime);
+
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        cameraPos += cameraSpeed * cameraDir;
+        camera.processKeyboard(FORWARD, dt);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        cameraPos -= cameraSpeed * cameraDir;
+        camera.processKeyboard(BACKWARD, dt);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        cameraPos -= glm::normalize(glm::cross(cameraDir, upVector)) * cameraSpeed;
+        camera.processKeyboard(LEFT, dt);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        cameraPos += glm::normalize(glm::cross(cameraDir, upVector)) * cameraSpeed;
+        camera.processKeyboard(RIGHT, dt);
+    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+        camera.processKeyboard(DOWN, dt);
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        camera.processKeyboard(UP, dt);
+}
+
+void mouseButtonFunc(GLFWwindow *win, int button, int action, int) {
+    glfwGetCursorPos(win, &lastX, &lastY);
+    if (button == GLFW_MOUSE_BUTTON_LEFT) {
+        switch (action) {
+            case GLFW_PRESS:
+                glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+                cameraControl = true;
+                break;
+            case GLFW_RELEASE:
+                glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+                cameraControl = false;
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 int main(int, char **) {
@@ -59,9 +90,13 @@ int main(int, char **) {
     gladLoadGL();
     fprintf(stderr, "OpenGL %s\n", glGetString(GL_VERSION));
 
-    projection = glm::perspective(glm::radians(45.0f), (float) mWidth / (float) mHeight, 0.01f, 100.1f);
+    glfwSetCursorPosCallback(mWindow, mouseCallback);
+    glfwSetMouseButtonCallback(mWindow, mouseButtonFunc);
+    camera.movementSpeed = 20.0f;
+    projection = glm::perspective(glm::radians(45.0f), (float) mWidth / (float) mHeight, 0.1f, 200.0f);
 
     glEnable(GL_DEPTH_TEST);
+    glfwSwapInterval(1);
 
     Mesh mesh(PROJECT_SOURCE_DIR "/models/Cup.3DS");
     lastTime = glfwGetTime();
@@ -80,12 +115,15 @@ int main(int, char **) {
 
         model = glm::rotate_slow(glm::mat4(1.0f), (float) glfwGetTime(), glm::vec3(1.0f, 1.0f, 1.0f));
         model = glm::rotate_slow(model, (float) glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
-        model = glm::rotate_slow(model, (float) glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
-        view = glm::lookAt(cameraPos, cameraPos + cameraDir, glm::vec3(0.0f, 1.0f, 0.0f));
+        view = camera.getViewMatrix();
+
         glm::mat4 mvp = setupMvp();
-        mesh.draw(mvp);
+        glm::mat3 normalm(glm::transpose(glm::inverse(model)));
+        mesh.draw(mvp, model, normalm);
+
         glfwSwapBuffers(mWindow);
         glfwPollEvents();
-    }   glfwTerminate();
+    }
+    glfwTerminate();
     return EXIT_SUCCESS;
 }

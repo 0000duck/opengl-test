@@ -101,6 +101,10 @@ private:
         glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(m));
     }
 
+    void doLoad(GLint loc, const glm::mat3 &m) const {
+        glUniformMatrix3fv(loc, 1, GL_FALSE, glm::value_ptr(m));
+    }
+
     void doLoad(GLint loc, const bool &b) const {
         glUniform1i(loc, b ? 1 : 0);
     }
@@ -142,6 +146,10 @@ public:
         GLint location = glGetUniformLocation(id, varname.c_str());
         glUseProgram(id);
         doLoad(location, input);
+    }
+
+    void use() {
+        glUseProgram(id);
     }
 
 };

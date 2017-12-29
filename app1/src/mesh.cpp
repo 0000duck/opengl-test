@@ -40,9 +40,6 @@ Mesh::MeshElement::MeshElement(const aiMesh *mesh) {
 }
 
 Mesh::MeshElement::~MeshElement() {
-//    elements.reset();
-//    vertices.reset();
-//    normals.reset();
     glDeleteVertexArrays(1, &vao);
 }
 
@@ -98,9 +95,11 @@ void Mesh::MeshElement::bind() {
     glBindVertexArray(vao);
 }
 
-void Mesh::MeshElement::draw(glm::mat4 &mvp) {
+void Mesh::MeshElement::draw(glm::mat4& mvp, glm::mat4& model, glm::mat3& normalm) {
     bind();
-    glUseProgram(shaderProgram->id);
+    shaderProgram->use();
     shaderProgram->loadUniform("mvp", mvp);
+    shaderProgram->loadUniform("model", model);
+    shaderProgram->loadUniform("normalm", normalm);
     glDrawElements(GL_TRIANGLES, numElements, GL_UNSIGNED_INT, nullptr);
 }
