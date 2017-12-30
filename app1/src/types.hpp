@@ -105,9 +105,9 @@ private:
         glUniformMatrix3fv(loc, 1, GL_FALSE, glm::value_ptr(m));
     }
 
-    void doLoad(GLint loc, const bool &b) const {
-        glUniform1i(loc, b ? 1 : 0);
-    }
+//    void doLoad(GLint loc, bool b) const {
+//        glUniform1i(loc, b ? 1 : 0);
+//    }
 
     void doLoad(GLint loc, const glm::vec3 &v) const {
         glUniform3f(loc, v.x, v.y, v.z);
@@ -146,13 +146,25 @@ public:
     }
 
     template<typename Arg>
-    void loadUniform(const std::string& varname, const Arg &input) const {
+    void loadUniform(const std::string &varname, const Arg &input) const {
         GLint location = glGetUniformLocation(id, varname.c_str());
         glUseProgram(id);
         doLoad(location, input);
     }
 
-    void use() {
+    void loadUniformInt(const std::string& varname, int input) const {
+        GLint location = glGetUniformLocation(id, varname.c_str());
+        glUseProgram(id);
+        glUniform1i(location, input);
+    }
+
+    void loadUniformFloat(const std::string& varname, float input) const {
+        GLint location = glGetUniformLocation(id, varname.c_str());
+        glUseProgram(id);
+        glUniform1f(location, input);
+    }
+
+    void use() const {
         glUseProgram(id);
     }
 

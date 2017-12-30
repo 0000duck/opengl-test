@@ -11,8 +11,6 @@
 
 class Mesh {
 private:
-    static std::unique_ptr<ShaderProgram> shaderProgram;
-
     struct MeshElement {
         std::unique_ptr<BufferObject<GL_ELEMENT_ARRAY_BUFFER, GLuint> > elements;
         std::unique_ptr<BufferObject<GL_ARRAY_BUFFER> > vertices;
@@ -42,9 +40,16 @@ private:
 
         std::unique_ptr<BufferObject<GL_ARRAY_BUFFER>> loadNormals(const aiMesh *);
 
-        void bind();
+        void bind() const;
 
-        void draw(glm::mat4& mvp, glm::mat4& model, glm::mat3& normalm, bool enlight = true);
+        void draw(const ShaderProgram &prog,
+                  const glm::mat4 &mvp,
+                  const glm::mat4 &model,
+                  const glm::mat3 &normalm) const;
+
+        void drawUnlit(const ShaderProgram &prog,
+                       const glm::mat4 &mvp,
+                       glm::vec3 color) const;
     };
 
     std::vector<MeshElement> meshElements;
@@ -61,11 +66,19 @@ public:
 
     ~Mesh();
 
-    void draw(glm::mat4& mvp, glm::mat4& model, glm::mat3& normalm) {
-        for (auto &m: meshElements) m.draw(mvp, model, normalm, enlight);
+    void draw(const ShaderProgram &prog,
+              const glm::mat4 &mvp,
+              const glm::mat4 &model,
+              const glm::mat3 &normalm) const {
+        for (auto &m: meshElements) m.draw(prog, mvp, model, normalm);
     };
 
-    bool enlight = true;
+    void drawUnlit(const ShaderProgram &prog,
+                   const glm::mat4 &mvp,
+                   glm::vec3 color) const {
+        for (auto &m: meshElements) m.drawUnlit(prog, mvp, color);
+    }
+
     glm::vec3 color = glm::vec3(0.5f);
 };
 

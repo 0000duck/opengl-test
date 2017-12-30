@@ -2,15 +2,8 @@
 #include <assimp/scene.h>
 #include "mesh.hpp"
 
-std::unique_ptr<ShaderProgram> Mesh::shaderProgram;
 
 Mesh::Mesh(std::string filename) {
-    if (!shaderProgram) {
-        shaderProgram = std::make_unique<ShaderProgram>();
-        Shader<GL_VERTEX_SHADER> vert(SHADERS_DIR "a1.vert");
-        Shader<GL_FRAGMENT_SHADER> frag(SHADERS_DIR "a1.frag");
-        shaderProgram->linkShaderProgram(vert, frag);
-    }
     Assimp::Importer importer;
     const aiScene *scene = importer.ReadFile(filename.c_str(), 0);
     if (scene == nullptr)
@@ -92,19 +85,26 @@ std::unique_ptr<BufferObject<GL_ARRAY_BUFFER>> Mesh::MeshElement::loadNormals(
     return buffer;
 }
 
-void Mesh::MeshElement::bind() {
+void Mesh::MeshElement::bind() const {
     glBindVertexArray(vao);
 }
 
-void Mesh::MeshElement::draw(glm::mat4 &mvp, glm::mat4 &model, glm::mat3 &normalm, bool enlight) {
+void Mesh::MeshElement::draw(const ShaderProgram &prog, const glm::mat4 &mvp, const glm::mat4 &model, const glm::mat3 &normalm) const {
     bind();
-    shaderProgram->use();
-    shaderProgram->loadUniform("mvp", mvp);
-    if (enlight) {
-        shaderProgram->loadUniform("model", model);
-        shaderProgram->loadUniform("normalm", normalm);
-    }
-    shaderProgram->loadUniform("enlight", enlight);
-    shaderProgram->loadUniform("color", color);
+    prog.use();
+    prog.loadUniform("mvp", mvp);
+    prog.loadUniform("model", model);
+    prog.loadUniform("normalm", normalm);
+    prog.loadUniformInt("enlight", true);
+    prog.loadUniform("color", color);
+    glDrawElements(GL_TRIANGLES, numElements, GL_UNSIGNED_INT, nullptr);
+}
+
+void Mesh::MeshElement::drawUnlit(const ShaderProgram &prog, const glm::mat4 &mvp, glm::vec3 color) const {
+    bind();
+    prog.use();
+    prog.loadUniform("mvp", mvp);
+    prog.loadUniformInt("enlight", false);
+    prog.loadUniform("color", color);
     glDrawElements(GL_TRIANGLES, numElements, GL_UNSIGNED_INT, nullptr);
 }
