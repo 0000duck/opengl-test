@@ -114,7 +114,6 @@ int main(int, char **) {
     Mesh mesh(PROJECT_SOURCE_DIR "/models/Cup.3DS");
     Lights lights(Mesh(PROJECT_SOURCE_DIR "/models/Sphere.3ds"), 0.05f);
     lights.pointLights.emplace_back(glm::vec3(2.0f, 2.0f, 8.0f));
-    lights.pointLights.emplace_back(glm::vec3(0.0f, 15.0f, 0.0f));
 
     ShaderProgram shaderProgram;
     {
@@ -145,6 +144,7 @@ int main(int, char **) {
         glm::mat3 normalm(glm::transpose(glm::inverse(model)));
 
         lights.loadPointIntoUniform(shaderProgram);
+        shaderProgram.loadUniform("viewerPos", camera.getPosition());
         mesh.draw(shaderProgram, mvp, model, normalm);
 
         lights.drawPointLights(shaderProgram, view, projection);

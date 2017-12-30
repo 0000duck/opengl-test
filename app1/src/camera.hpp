@@ -28,6 +28,10 @@ const float ZOOM = 45.0f;
 
 class Camera {
     glm::vec3 posV;
+public:
+    const glm::vec3 &getPosition() const;
+
+private:
     glm::vec3 frontV;
     glm::vec3 upV;
     glm::vec3 rightV;
@@ -41,8 +45,8 @@ public:
     float zoom;
 
     explicit Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
-           float yaw = YAW, float pitch = PITCH) : frontV(glm::vec3(0.0f, 0.0f, -1.0f)), movementSpeed(SPEED),
-                                                   mouseSensitivity(SENSITIVITY), zoom(ZOOM) {
+                    float yaw = YAW, float pitch = PITCH) : frontV(glm::vec3(0.0f, 0.0f, -1.0f)), movementSpeed(SPEED),
+                                                            mouseSensitivity(SENSITIVITY), zoom(ZOOM) {
         posV = position;
         worldUpV = up;
         xi = yaw;
@@ -115,6 +119,10 @@ private:
         upV = glm::normalize(glm::cross(rightV, frontV));
     }
 };
+
+const glm::vec3 &Camera::getPosition() const {
+    return posV;
+}
 
 
 #endif //APP1_CAMERA_HPP

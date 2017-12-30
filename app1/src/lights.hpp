@@ -13,7 +13,7 @@ struct PointLight {
 
     glm::vec3 ambient = glm::vec3(1.0f)/5.0f;
     glm::vec3 diffuse = glm::vec3(1.0f)/2.0f;
-    glm::vec3 specular = glm::vec3(1.0f);
+    glm::vec3 specular = glm::vec3(1.0f)/2.0f;
 
     glm::vec3 attenuation = glm::vec3(0.5f, 0.05f, 0.02f);
 
