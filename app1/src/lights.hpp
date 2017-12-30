@@ -15,7 +15,7 @@ struct PointLight {
     glm::vec3 diffuse = glm::vec3(1.0f)/2.0f;
     glm::vec3 specular = glm::vec3(1.0f)/2.0f;
 
-    glm::vec3 attenuation = glm::vec3(0.5f, 0.05f, 0.02f);
+    glm::vec3 attenuation = glm::vec3(0.5f, 0.005f, 0.002f);
 
     explicit PointLight(glm::vec3 _pos) : position(_pos) {}
 

@@ -38,8 +38,8 @@ vec3 processPointLight(PointLight light, vec3 worldPos) {
     if (clv > 0) {
         outColor += clv * light.diffuse * color * attenuation;
         vec3 viewV = normalize(viewerPos - worldPos);
-        vec3 reflected = reflect(lv, outNormal);
-        float spec = pow(max(dot(reflected, viewV), 0.0), 2.0);
+        vec3 reflected = -reflect(lv, outNormal);
+        float spec = pow(max(dot(reflected, viewV), 0.0), 10.0);
         outColor += spec * light.specular * color * attenuation;
     }
     return outColor;
