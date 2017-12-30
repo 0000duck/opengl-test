@@ -25,6 +25,10 @@ float attFactor (vec3 att, float dist){
   return 1.0/(((att.z*dist)+att.y)*dist+att.x);
 }
 
+vec3 project(vec3 v, vec3 n) {
+    return v - dot(v, n) * n;
+}
+
 vec3 processPointLight(PointLight light, vec3 worldPos) {
     vec3 outColor = vec3(0.0);
     vec3 distV = light.position - worldPos;
@@ -38,9 +42,13 @@ vec3 processPointLight(PointLight light, vec3 worldPos) {
     if (clv > 0) {
         outColor += clv * light.diffuse * color * attenuation;
         vec3 viewV = normalize(viewerPos - worldPos);
-        vec3 reflected = -reflect(lv, outNormal);
+        vec3 reflected = reflect(-lv, outNormal);
+        vec3 projectedL = project(reflected, outNormal);
+        vec3 projectedV = project(viewV, outNormal);
+        float angF = max(dot(projectedL, projectedV), 0.0);
         float spec = pow(max(dot(reflected, viewV), 0.0), 10.0);
-        outColor += spec * light.specular * color * attenuation;
+        outColor += (1.0 + angF*2.0) *spec * light.specular * color * attenuation;
+        //outColor += (-angF*0.3) * light.specular * color * attenuation;
     }
     return outColor;
 }
