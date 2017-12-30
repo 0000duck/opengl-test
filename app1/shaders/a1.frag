@@ -15,12 +15,14 @@ struct PointLight {
     vec3 diffuse;
     vec3 specular;
 
-    float c;
-    float l;
-    float q;
+    vec3 attenuation;
 };
 #define MAX_POINT_LIGHTS 20
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
+
+float attFactor (vec3 att, float dist){
+  return 1.0/(((att.z*dist)+att.y)*dist+att.x);
+}
 
 vec3 processPointLight(PointLight light, vec3 worldPos) {
     vec3 outColor = vec3(0.0);
@@ -28,14 +30,14 @@ vec3 processPointLight(PointLight light, vec3 worldPos) {
     vec3 lv = normalize(distV);
     float dist = length(distV);
 
-    float attenuationI = light.c + dist * light.l + (dist * dist) * light.q;
+    float attenuation = attFactor(light.attenuation, dist);
 
     float clv = dot(lv, outNormal);
     outColor += light.ambient * color;
     if (clv > 0) {
-        outColor += (clv * light.diffuse) * color;
+        outColor += (clv * light.diffuse) * color * attenuation;
     }
-    return outColor / attenuationI;
+    return outColor;
 }
 
 void main()

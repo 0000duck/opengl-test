@@ -11,11 +11,11 @@
 struct PointLight {
     glm::vec3 position;
 
-    glm::vec3 ambient = glm::vec3(1.0f)/3.0f;
+    glm::vec3 ambient = glm::vec3(1.0f)/5.0f;
     glm::vec3 diffuse = glm::vec3(1.0f)/2.0f;
     glm::vec3 specular = glm::vec3(1.0f);
 
-    float q = 0.01f, l = 0.05f, c = 0.5f;
+    glm::vec3 attenuation = glm::vec3(0.5f, 0.05f, 0.02f);
 
     explicit PointLight(glm::vec3 _pos) : position(_pos) {}
 
@@ -24,9 +24,7 @@ struct PointLight {
         prog.loadUniform(prefix + ".ambient", ambient);
         prog.loadUniform(prefix + ".diffuse", diffuse);
         prog.loadUniform(prefix + ".specular", specular);
-        prog.loadUniformFloat(prefix + ".c", c);
-        prog.loadUniformFloat(prefix + ".l", l);
-        prog.loadUniformFloat(prefix + ".q", q);
+        prog.loadUniform(prefix + ".attenuation", attenuation);
     }
 
     glm::vec3 getModelColor() const {
