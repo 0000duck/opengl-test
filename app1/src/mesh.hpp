@@ -1,11 +1,14 @@
 #ifndef APP1_MESH_HPP
 #define APP1_MESH_HPP
 
+#include <vector>
+#include <memory>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <vector>
 #include <glad/glad.h>
 #include <assimp/mesh.h>
+
 #include "types.hpp"
 
 
