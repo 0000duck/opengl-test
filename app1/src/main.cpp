@@ -4,6 +4,7 @@
 
 #include <GLFW/glfw3.h>
 
+#include <assimp/DefaultLogger.hpp>
 
 double lastTime;
 double deltaTime;
@@ -111,6 +112,8 @@ int main(int, char **) {
 
     glEnable(GL_DEPTH_TEST);
     glfwSwapInterval(1);
+
+    Assimp::DefaultLogger::create("log.txt", Assimp::Logger::VERBOSE);
 
     Mesh mesh(PROJECT_SOURCE_DIR "/models/Cup.3DS");
     Lights lights(Mesh(PROJECT_SOURCE_DIR "/models/Sphere.3ds"), 0.05f);

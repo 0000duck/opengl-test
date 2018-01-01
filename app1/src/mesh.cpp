@@ -1,11 +1,15 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
+#include <assimp/postprocess.h>
 #include "mesh.hpp"
 
 
 Mesh::Mesh(std::string filename) {
     Assimp::Importer importer;
-    const aiScene *scene = importer.ReadFile(filename.c_str(), 0);
+    const aiScene *scene = importer.ReadFile(filename.c_str(),
+                                             aiProcess_JoinIdenticalVertices |
+                                             aiProcess_Triangulate |
+                                             aiProcess_GenSmoothNormals);
     if (scene == nullptr)
         throw std::runtime_error(importer.GetErrorString());
     if (!scene->HasMeshes())
@@ -89,7 +93,8 @@ void Mesh::MeshElement::bind() const {
     glBindVertexArray(vao);
 }
 
-void Mesh::MeshElement::draw(const ShaderProgram &prog, const glm::mat4 &mvp, const glm::mat4 &model, const glm::mat3 &normalm) const {
+void Mesh::MeshElement::draw(const ShaderProgram &prog, const glm::mat4 &mvp, const glm::mat4 &model,
+                             const glm::mat3 &normalm) const {
     bind();
     prog.use();
     prog.loadUniform("mvp", mvp);
