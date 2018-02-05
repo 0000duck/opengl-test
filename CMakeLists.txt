@@ -74,6 +74,7 @@ include_directories(app1/src/
                     app1/lib/glad/include/
                     app1/lib/glfw/include/
                     app1/lib/glm/
+                    app1/lib/PerlinNoise
                     #app1/lib/stb/
         )
 
