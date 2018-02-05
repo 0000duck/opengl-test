@@ -3,11 +3,14 @@ out vec4 FragColor;
 
 in vec3 outNormal;
 in vec4 worldPos;
+in vec2 texCoord;
 
 uniform bool enlight = true;
 uniform vec3 color;
 uniform int numPointLights;
 uniform vec3 viewerPos;
+
+uniform sampler2D noise;
 
 struct PointLight {
     vec3 position;
@@ -38,7 +41,7 @@ vec3 processPointLight(PointLight light, vec3 worldPos) {
     vec3 distV = light.position - worldPos;
     vec3 lv = normalize(distV);
     float dist = length(distV);
-
+    vec4 noiseVal = texture(noise, texCoord);
     float attenuation = attFactor(light.attenuation, dist);
 
     float clv = dot(lv, outNormal);
@@ -47,8 +50,8 @@ vec3 processPointLight(PointLight light, vec3 worldPos) {
         outColor += clv * light.diffuse * color * attenuation;
         vec3 viewV = normalize(viewerPos - worldPos);
         vec3 h = normalize(lv+viewV);
-        float spec = W(clv) * pow(dot(h, outNormal), 2*10.0);
-        outColor += spec * light.specular * color * attenuation;
+        float spec = W(clv) * pow(dot(h, outNormal), 2*50.0*noiseVal.x);
+        outColor += spec * (3*pow(noiseVal.x,2.0)) *light.specular * color * attenuation;
     }
     return outColor;
 }

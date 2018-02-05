@@ -170,4 +170,36 @@ public:
 
 };
 
+class Texture {
+public:
+    GLuint id;
+
+    Texture (Texture const &) = delete;
+
+    Texture  &operator=(Texture  const &) = delete;
+
+    Texture (Texture&& other) {
+        id = other.id;
+    }
+
+    Texture (GLubyte* data, int width, int height) {
+        glGenTextures(1, &id);
+        glBindTexture(GL_TEXTURE_2D, id);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+
+    ~Texture() {
+        glDeleteTextures(1, &id);
+    }
+
+    void bind() {
+        glBindTexture(GL_TEXTURE_2D, id);
+    }
+};
+
 #endif //APP1_TYPES_HPP

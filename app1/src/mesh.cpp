@@ -9,7 +9,9 @@ Mesh::Mesh(std::string filename) {
     const aiScene *scene = importer.ReadFile(filename.c_str(),
                                              aiProcess_JoinIdenticalVertices |
                                              aiProcess_Triangulate |
-                                             aiProcess_GenSmoothNormals);
+                                             aiProcess_GenUVCoords |
+                                             aiProcess_GenSmoothNormals
+                                            );
     if (scene == nullptr)
         throw std::runtime_error(importer.GetErrorString());
     if (!scene->HasMeshes())
@@ -35,6 +37,8 @@ Mesh::MeshElement::MeshElement(const aiMesh *mesh) {
     vertices = loadVertices(mesh);
     if (mesh->HasNormals())
         normals = loadNormals(mesh);
+    if (mesh->HasTextureCoords(0))
+        texCoords = loadTexCoords(mesh);
 }
 
 Mesh::MeshElement::~MeshElement() {
@@ -86,6 +90,21 @@ std::unique_ptr<BufferObject<GL_ARRAY_BUFFER>> Mesh::MeshElement::loadNormals(
     buffer->loadData(vertices.size(), vertices.data());
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
     glEnableVertexAttribArray(1);
+    return buffer;
+}
+
+std::unique_ptr<BufferObject<GL_ARRAY_BUFFER>> Mesh::MeshElement::loadTexCoords(
+        const aiMesh * mesh) {
+    auto buffer = std::make_unique<BufferObject<GL_ARRAY_BUFFER>>();
+    std::vector<GLfloat> texCoords(mesh->mNumVertices * 2);
+    for(int i = 0; i < mesh->mNumVertices; ++i) {
+        texCoords[i * 2] = mesh->mTextureCoords[0][i].x;
+        texCoords[i * 2 + 1] = mesh->mTextureCoords[0][i].y;
+    }
+    bind();
+    buffer->loadData(texCoords.size(), texCoords.data());
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+    glEnableVertexAttribArray(2);
     return buffer;
 }
 

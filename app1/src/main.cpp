@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 
 #include <assimp/DefaultLogger.hpp>
+#include <PerlinNoise.hpp>
 
 double lastTime;
 double deltaTime;
@@ -64,6 +65,30 @@ void mouseButtonFunc(GLFWwindow *win, int button, int action, int) {
                 break;
         }
     }
+}
+
+GLubyte toGLubyte(double x)
+{
+    return x >= 1.0 ? 255 : x <= 0.0 ? 0 : static_cast<GLubyte>(x * 255.0 + 0.5);
+}
+
+Texture createTexture() {
+    constexpr int width = 1024;
+    constexpr int height = 1024;
+    double freq = 0.5;
+    GLubyte data [width * height * 3];
+    const siv::PerlinNoise perlin;
+    for (int i = 0; i < height ; i++) {
+        for (int j = 0; j < width ; j++) {
+            double value = perlin.noise0_1(freq *(double)j /width, freq* (double)i /height);
+            GLubyte byteval = toGLubyte(value);
+            int idx = i * (width * 3) + j * 3;
+            data[idx] = byteval;
+            data[idx +1] = byteval;
+            data[idx +2] = byteval;
+        }
+    }
+    return Texture(data, width, height);
 }
 
 void processInput(GLFWwindow *window) {
@@ -126,6 +151,8 @@ int main(int, char **) {
         shaderProgram.linkShaderProgram(vert, frag);
     }
 
+    Texture noise = createTexture();
+
     lastTime = glfwGetTime();
     while (glfwWindowShouldClose(mWindow) == 0) {
         if (glfwGetKey(mWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -149,6 +176,7 @@ int main(int, char **) {
 
         lights.loadPointIntoUniform(shaderProgram);
         shaderProgram.loadUniform("viewerPos", camera.getPosition());
+        noise.bind();
         mesh.draw(shaderProgram, mvp, model, normalm);
 
         lights.drawPointLights(shaderProgram, view, projection);

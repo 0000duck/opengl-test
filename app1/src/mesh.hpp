@@ -18,6 +18,7 @@ private:
         std::unique_ptr<BufferObject<GL_ELEMENT_ARRAY_BUFFER, GLuint> > elements;
         std::unique_ptr<BufferObject<GL_ARRAY_BUFFER> > vertices;
         std::unique_ptr<BufferObject<GL_ARRAY_BUFFER> > normals;
+        std::unique_ptr<BufferObject<GL_ARRAY_BUFFER> > texCoords;
         GLuint vao;
         size_t numElements;
         glm::vec3 color;
@@ -31,6 +32,7 @@ private:
             elements = std::move(other.elements);
             vertices = std::move(other.vertices);
             normals = std::move(other.normals);
+            texCoords = std::move(other.texCoords);
         }
 
         explicit MeshElement(const aiMesh *);
@@ -42,6 +44,8 @@ private:
         std::unique_ptr<BufferObject<GL_ARRAY_BUFFER>> loadVertices(const aiMesh *);
 
         std::unique_ptr<BufferObject<GL_ARRAY_BUFFER>> loadNormals(const aiMesh *);
+
+        std::unique_ptr<BufferObject<GL_ARRAY_BUFFER>> loadTexCoords(const aiMesh *);
 
         void bind() const;
 
