@@ -50,9 +50,10 @@ vec3 processPointLight(PointLight light, vec3 worldPos) {
         outColor += clv * light.diffuse * color * attenuation;
         vec3 viewV = normalize(viewerPos - worldPos);
         vec3 h = normalize(lv+viewV);
-        float spec = W(clv) * pow(dot(h, outNormal), 2*50.0*noiseVal.x);
-        outColor += spec * (3*pow(noiseVal.x,2.0)) *light.specular * color * attenuation;
+        float spec = W(clv) * pow(dot(h, outNormal), 2*10.0);
+        outColor += spec  *light.specular * color * attenuation;
     }
+    outColor.r *= pow(noiseVal.x + 0.5, 3.0);
     return outColor;
 }
 
