@@ -41,19 +41,18 @@ vec3 processPointLight(PointLight light, vec3 worldPos) {
     vec3 distV = light.position - worldPos;
     vec3 lv = normalize(distV);
     float dist = length(distV);
-    vec4 noiseVal = texture(noise, texCoord);
+    float noiseVal = texture(noise, texCoord).x;
     float attenuation = attFactor(light.attenuation, dist);
 
     float clv = dot(lv, outNormal);
     outColor += light.ambient * color;
     if (clv > 0) {
-        outColor += clv * light.diffuse * color * attenuation;
+        outColor += clv * light.diffuse * color * attenuation /2;
         vec3 viewV = normalize(viewerPos - worldPos);
         vec3 h = normalize(lv+viewV);
-        float spec = W(clv) * pow(dot(h, outNormal), 2*10.0);
-        outColor += spec  *light.specular * color * attenuation;
+        float spec = W(clv) * pow(dot(h, outNormal), 2*20.0*noiseVal);
+        outColor += spec * pow(light.specular, vec3(2.0)*noiseVal) * color * attenuation;
     }
-    outColor.r *= pow(noiseVal.x + 0.5, 3.0);
     return outColor;
 }
 

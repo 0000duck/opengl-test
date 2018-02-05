@@ -75,7 +75,7 @@ GLubyte toGLubyte(double x)
 Texture createTexture() {
     constexpr int width = 1024;
     constexpr int height = 1024;
-    double freq = 0.5;
+    double freq = 40.0;
     GLubyte data [width * height * 3];
     const siv::PerlinNoise perlin;
     for (int i = 0; i < height ; i++) {
@@ -140,7 +140,7 @@ int main(int, char **) {
 
     Assimp::DefaultLogger::create("log.txt", Assimp::Logger::VERBOSE);
 
-    Mesh mesh(PROJECT_SOURCE_DIR "/models/Cup.3DS");
+    Mesh mesh(PROJECT_SOURCE_DIR "/models/ball.3DS");
     Lights lights(Mesh(PROJECT_SOURCE_DIR "/models/Sphere.3ds"), 0.05f);
     lights.pointLights.emplace_back(glm::vec3(2.0f, 2.0f, 8.0f));
 
@@ -167,7 +167,7 @@ int main(int, char **) {
         glClearColor(0.7f, 0.75f, 0.8f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        model = glm::rotate(glm::mat4(1.0f), (float) glfwGetTime(), glm::vec3(1.0f, 1.0f, 0.0f));
+        model = glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(0.1f)), (float) glfwGetTime(), glm::vec3(1.0f, 1.0f, 0.0f));
         //model = glm::rotate_slow(model, (float) glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
         view = camera.getViewMatrix();
 
