@@ -9,7 +9,7 @@ Mesh::Mesh(std::string filename) {
     const aiScene *scene = importer.ReadFile(filename.c_str(),
                                              aiProcess_JoinIdenticalVertices |
                                              aiProcess_Triangulate |
-                                             aiProcess_GenUVCoords |
+                                             aiProcess_FlipUVs |
                                              aiProcess_GenSmoothNormals
                                             );
     if (scene == nullptr)
