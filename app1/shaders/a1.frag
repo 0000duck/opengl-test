@@ -37,7 +37,7 @@ float W(float a) {
     return 1.0 + (1.0 - abs(a)) * 4.0;
 }
 
-#define PI 3.1415
+#define PI 3.14159265
 
 /* (c) learnopengl.com */
 float DistributionGGX(vec3 N, vec3 H, float a)
@@ -74,11 +74,10 @@ vec3 fresnelSchlick(float cosTheta, vec3 color)
     return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
-vec3 CookTorrance(vec3 n, vec3 v, vec3 l, float a, vec3 color) {
+vec3 CookTorrance(vec3 n, vec3 v, vec3 l, float a, vec3 F) {
     float k = pow(a+1.0, 2.0)/8.0;
     float D = DistributionGGX(n, normalize(l+v), a);
     float G = GeometrySmith(n,v,l,k);
-    vec3 F = fresnelSchlick(dot(l,n), color);
     return D*G*F/4.0/dot(v,n)/dot(l,n);
 }
 /* */
@@ -93,6 +92,7 @@ vec3 processPointLight(PointLight light, vec3 worldPos) {
     float attenuation = attFactor(light.attenuation, dist);
 
     float clv = dot(lv, outNormal);
+    vec3 viewV = normalize(viewerPos - worldPos);
 //    outColor += light.ambient * color;
 //    if (clv > 0) {
 //        outColor += clv * light.diffuse * color * attenuation;
@@ -103,12 +103,17 @@ vec3 processPointLight(PointLight light, vec3 worldPos) {
 //    }
     clv = max(0.0, clv);
     vec3 color = vec3(0.90+0.10*noiseVal,0.90+0.05*(1.0-noiseVal),0.90+0.05*(1.0-noiseVal));
+    vec3 F = fresnelSchlick(dot(viewV, normalize(viewV+lv)), color);
+
     vec3 res = vec3(0.0);
-    res += clv* (1.0 - noiseVal)/PI*color*2.0;
-    vec3 viewV = normalize(viewerPos - worldPos);
-    res += (noiseVal) * clv* CookTorrance(outNormal, viewV, lv, noiseVal, color) * 10.0;
+    res += clv* (1.0 - F)/PI*color;
+    res += clv* CookTorrance(outNormal, viewV, lv, noiseVal, F)*100.0; // czemu tak slabo
+
+
+    res = res / (res + vec3(1.0));
+    res = pow(res, vec3(1.0/2.0));
+
     return res;
-    return outColor;
 }
 
 
