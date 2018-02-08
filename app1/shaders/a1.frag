@@ -109,16 +109,17 @@ vec3 processPointLight(PointLight light, vec3 worldPos) {
 //        outColor += spec * light.specular * color * attenuation;
 //    }
     clv = max(0.0, clv);
-    vec3 color = vec3(0.90+0.10*noiseVal,0.90+0.05*(1.0-noiseVal),0.90+0.05*(1.0-noiseVal));
+    vec3 color = vec3(0.85+0.05*noiseVal,0.85+0.05*(1.0-noiseVal),0.85+0.05*(1.0-noiseVal));
+    //vec3 color = vec3(1.0);
     vec3 F = fresnelSchlick(dot(viewV, normalize(viewV+lv)), color);
 
     vec3 res = vec3(0.0);
     res += clv * color * (1.0 - F)/PI;
-    res += clv * CookTorrance(outNormal, viewV, lv, noiseVal, F)*10.0; // czemu tak slabo
+    res += clv * CookTorrance(outNormal, viewV, lv, noiseVal, F)*1.0; // czemu tak slabo
 
 
     res = res / (res + vec3(1.0));
-    res = pow(res, vec3(1.0/2.0));
+    res = pow(res, vec3(1.0/2.2));
 
     return res;
 }
