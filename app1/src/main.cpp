@@ -140,7 +140,7 @@ int main(int, char **) {
 
     Assimp::DefaultLogger::create("log.txt", Assimp::Logger::VERBOSE);
 
-    Mesh mesh(PROJECT_SOURCE_DIR "/models/ball.3DS");
+    Mesh mesh(PROJECT_SOURCE_DIR "/models/box.3DS");
     Lights lights(Mesh(PROJECT_SOURCE_DIR "/models/Sphere.3ds"), 0.1f);
     lights.pointLights.emplace_back(glm::vec3(2.0f, 2.0f, 8.0f)*4.0f);
 

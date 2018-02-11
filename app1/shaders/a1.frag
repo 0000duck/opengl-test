@@ -90,36 +90,25 @@ vec3 CookTorrance(vec3 n, vec3 v, vec3 l, float a, vec3 F) {
     return D*G*F/4.0/dot(v,n)/dot(l,n);
 }
 
-vec3 processPointLight(PointLight light, vec3 worldPos) {
+vec3 processPointLight(PointLight light, vec3 worldPos, vec3 normal) {
     vec3 outColor = vec3(0.0);
     vec3 distV = light.position - worldPos;
     vec3 lv = normalize(distV);
     float dist = length(distV);
     float noiseVal = texture(noise, texCoord).x;
     float attenuation = attFactor(light.attenuation, dist);
-
-    float clv = dot(lv, outNormal);
     vec3 viewV = normalize(viewerPos - worldPos);
-//    outColor += light.ambient * color;
-//    if (clv > 0) {
-//        outColor += clv * light.diffuse * color * attenuation;
-//        vec3 viewV = normalize(viewerPos - worldPos);
-//        vec3 h = normalize(lv+viewV);
-//        float spec = W(clv) * pow(dot(h, outNormal), 100.0*noiseVal);
-//        outColor += spec * light.specular * color * attenuation;
-//    }
-    clv = max(0.0, clv);
-    vec3 color = vec3(0.85+0.05*noiseVal,0.85+0.05*(1.0-noiseVal),0.85+0.05*(1.0-noiseVal));
-    //vec3 color = vec3(1.0);
+    float clv = max(0.0, dot(lv, normal));
+    vec3 color = vec3(0.85+0.1*noiseVal,0.85+0.1*(1.0-noiseVal),0.85+0.1*(1.0-noiseVal))/5.0;
     vec3 F = fresnelSchlick(dot(viewV, normalize(viewV+lv)), color);
 
     vec3 res = vec3(0.0);
     res += clv * color * (1.0 - F)/PI;
-    res += clv * CookTorrance(outNormal, viewV, lv, noiseVal, F)*1.0; // czemu tak slabo
+    res += clv * CookTorrance(normal, viewV, lv, 0.1 + 0.8 *noiseVal, F);
 
 
     res = res / (res + vec3(1.0));
-    res = pow(res, vec3(1.0/2.2));
+    res = pow(res, vec3(1.0/2.0));
 
     return res;
 }
@@ -131,7 +120,7 @@ void main()
     vec3 worldPos = vec3(worldPos) / worldPos.w;
     if (enlight) {
         for(int i = 0; i < numPointLights; i++) {
-            outColor += processPointLight(pointLights[i], worldPos);
+            outColor += processPointLight(pointLights[i], worldPos, normalize(outNormal));
         }
     } else {
         outColor = color;
