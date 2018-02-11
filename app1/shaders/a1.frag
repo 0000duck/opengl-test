@@ -91,7 +91,6 @@ vec3 CookTorrance(vec3 n, vec3 v, vec3 l, float a, vec3 F) {
 }
 
 vec3 processPointLight(PointLight light, vec3 worldPos, vec3 normal) {
-    vec3 outColor = vec3(0.0);
     vec3 distV = light.position - worldPos;
     vec3 lv = normalize(distV);
     float dist = length(distV);
@@ -99,7 +98,6 @@ vec3 processPointLight(PointLight light, vec3 worldPos, vec3 normal) {
     float attenuation = attFactor(light.attenuation, dist);
     vec3 viewV = normalize(viewerPos - worldPos);
     float clv = max(0.0, dot(lv, normal));
-    vec3 color = vec3(0.85+0.1*noiseVal,0.85+0.1*(1.0-noiseVal),0.85+0.1*(1.0-noiseVal))/5.0;
     vec3 F = fresnelSchlick(dot(viewV, normalize(viewV+lv)), color);
 
     vec3 res = vec3(0.0);
@@ -107,7 +105,7 @@ vec3 processPointLight(PointLight light, vec3 worldPos, vec3 normal) {
     res += clv * CookTorrance(normal, viewV, lv, 0.05 + 0.5 *noiseVal, F);
 
 
-    return res;
+    return res * attenuation;
 }
 
 

@@ -138,7 +138,7 @@ int main(int, char **) {
 
     Assimp::DefaultLogger::create("log.txt", Assimp::Logger::VERBOSE);
 
-    Mesh mesh(PROJECT_SOURCE_DIR "/models/ball.3DS");
+    Mesh mesh(PROJECT_SOURCE_DIR "/models/box.3DS");
     Lights lights(Mesh(PROJECT_SOURCE_DIR "/models/Sphere.3ds"), 0.1f);
     lights.pointLights.emplace_back(glm::vec3(2.0f, 2.0f, 8.0f)*4.0f);
     lights.pointLights.emplace_back(glm::vec3(2.0f, 8.0f, 2.0f)*4.0f);
@@ -169,16 +169,19 @@ int main(int, char **) {
         lights.pointLights[0].position =
                 glm::rotate(glm::vec3(2.0f, 2.0f, 8.0f)*4.0f, (float) glfwGetTime(), glm::vec3(1.0f, 1.0f, 1.0f));
 
-        glm::mat4 model = glm::rotate(glm::mat4(1.0f), (float) glfwGetTime(), glm::vec3(1.0f, 0.25f, 1.0f));
-        glm::mat4 view = camera.getViewMatrix();
-
-        glm::mat4 mvp = setupMvp(model, view);
-        glm::mat3 normalm(glm::transpose(glm::inverse(model)));
-
         lights.loadPointIntoUniform(shaderProgram);
         shaderProgram.loadUniform("viewerPos", camera.getPosition());
-        noise.bind();
-        mesh.draw(shaderProgram, mvp, model, normalm);
+
+        glm::mat4 view = camera.getViewMatrix();
+
+        for (int i = -2; i < 3; i++) {
+            //glm::mat4 model = glm::rotate(, 0.1f*(float) glfwGetTime(), glm::vec3(1.0f, 0.25f, 1.0f));
+            glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(15.f*i, 0.0f, 0.0f));
+            glm::mat4 mvp = setupMvp(model, view);
+            glm::mat3 normalm(glm::transpose(glm::inverse(model)));
+            noise.bind();
+            mesh.draw(shaderProgram, mvp, model, normalm);
+        }
 
         lights.drawPointLights(shaderProgram, view, projection);
 

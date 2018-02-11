@@ -86,7 +86,7 @@ public:
         for (auto &m: meshElements) m.drawUnlit(prog, mvp, color);
     }
 
-    glm::vec3 color = glm::vec3(0.5f);
+    glm::vec3 color = glm::vec3(0.2f, 0.24f, 0.4f);
 };
 
 
