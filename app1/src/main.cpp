@@ -4,8 +4,8 @@
 
 #include <GLFW/glfw3.h>
 
-#include <assimp/DefaultLogger.hpp>
-#include <PerlinNoise.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/rotate_vector.hpp>
 
 double lastTime;
 double deltaTime;
@@ -18,12 +18,10 @@ double lastY;
 bool cameraControl = false;
 Camera camera(glm::vec3(0.0f, 0.0f, 15.0f));
 
-glm::mat4 model(1.0f);
-glm::mat4 view(1.0f);
 glm::mat4 projection(1.0f);
 
 
-glm::mat4 setupMvp() {
+glm::mat4 setupMvp(const glm::mat4& model, const glm::mat4& view) {
     glm::mat4 mvp(1.0f);
     mvp *= projection;
     mvp *= view;
@@ -140,9 +138,11 @@ int main(int, char **) {
 
     Assimp::DefaultLogger::create("log.txt", Assimp::Logger::VERBOSE);
 
-    Mesh mesh(PROJECT_SOURCE_DIR "/models/box.3DS");
+    Mesh mesh(PROJECT_SOURCE_DIR "/models/ball.3DS");
     Lights lights(Mesh(PROJECT_SOURCE_DIR "/models/Sphere.3ds"), 0.1f);
     lights.pointLights.emplace_back(glm::vec3(2.0f, 2.0f, 8.0f)*4.0f);
+    lights.pointLights.emplace_back(glm::vec3(2.0f, 8.0f, 2.0f)*4.0f);
+    //lights.pointLights.emplace_back(glm::vec3(8.0f, 2.0f, 2.0f)*4.0f);
 
     ShaderProgram shaderProgram;
     {
@@ -166,12 +166,13 @@ int main(int, char **) {
 
         glClearColor(0.1f, 0.1f, 0.12f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        lights.pointLights[0].position =
+                glm::rotate(glm::vec3(2.0f, 2.0f, 8.0f)*4.0f, (float) glfwGetTime(), glm::vec3(1.0f, 1.0f, 1.0f));
 
-        model = glm::rotate(glm::mat4(1.0f), (float) glfwGetTime(), glm::vec3(1.0f, 0.0f, 1.0f));
-        //model = glm::rotate_slow(model, (float) glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
-        view = camera.getViewMatrix();
+        glm::mat4 model = glm::rotate(glm::mat4(1.0f), (float) glfwGetTime(), glm::vec3(1.0f, 0.25f, 1.0f));
+        glm::mat4 view = camera.getViewMatrix();
 
-        glm::mat4 mvp = setupMvp();
+        glm::mat4 mvp = setupMvp(model, view);
         glm::mat3 normalm(glm::transpose(glm::inverse(model)));
 
         lights.loadPointIntoUniform(shaderProgram);

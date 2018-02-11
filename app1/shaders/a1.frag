@@ -87,7 +87,7 @@ vec3 CookTorrance(vec3 n, vec3 v, vec3 l, float a, vec3 F) {
     float k = pow(a+1.0, 2.0)/8.0;
     float D = DistributionGGX(n, normalize(l+v), a);
     float G = GeometrySmith(n, v, l, a);
-    return D*G*F/4.0/dot(v,n)/dot(l,n);
+    return D*G*F/4.0/max(0.0001, dot(v,n)* dot(l,n));
 }
 
 vec3 processPointLight(PointLight light, vec3 worldPos, vec3 normal) {
@@ -104,11 +104,8 @@ vec3 processPointLight(PointLight light, vec3 worldPos, vec3 normal) {
 
     vec3 res = vec3(0.0);
     res += clv * color * (1.0 - F)/PI;
-    res += clv * CookTorrance(normal, viewV, lv, 0.1 + 0.8 *noiseVal, F);
+    res += clv * CookTorrance(normal, viewV, lv, 0.05 + 0.5 *noiseVal, F);
 
-
-    res = res / (res + vec3(1.0));
-    res = pow(res, vec3(1.0/2.0));
 
     return res;
 }
@@ -125,6 +122,8 @@ void main()
     } else {
         outColor = color;
     }
+    outColor = outColor / (outColor + vec3(1.0));
+    outColor = pow(outColor, vec3(1.0/2.2));
 
     FragColor = vec4(outColor, 1.0);
 }
